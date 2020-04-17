@@ -215,6 +215,98 @@ namespace CSGIGServer
             return response;
         }
 
+        public CheckSerialNumberObjectResponse CheckSerialNumber(CheckSerialNumberObjectRequest request)
+        {
+            CheckSerialNumberObjectResponse response = new CheckSerialNumberObjectResponse();
+
+            try
+            {
+                CheckSerialNumberResponse checkSerialNumberResponse =
+                    new UserServerObjectService().CheckSerialNumber(new CheckSerialNumberRequest()
+                    {
+                        SerialNumber = request.SerialNumber
+                    });
+
+                if (checkSerialNumberResponse.Result.Success())
+                {
+                    response.Result = new Ac4yProcessResult() { Code = Ac4yProcessResult.SUCCESS, Message = "létezik" };
+                }
+                else
+                {
+                    response.Result = new Ac4yProcessResult() { Code = Ac4yProcessResult.INEFFECTIVE, Message = "nem létezik" };
+                }
+
+            }
+            catch (Exception exception)
+            {
+                response.Result = (new Ac4yProcessResult() { Code = Ac4yProcessResult.FAIL, Message = exception.Message, Description = exception.StackTrace });
+            }
+            return response;
+        }
+
+        public SendAcceptRequestResponse SendAcceptRequest(SendAcceptRequestRequest request)
+        {
+            return new SendAcceptRequestResponse();
+        }
+
+        public AttachNewDeviceObjectResponse AttachNewDevice(AttachNewDeviceObjectRequest request)
+        {
+            AttachNewDeviceObjectResponse response = new AttachNewDeviceObjectResponse();
+
+            try
+            {
+                AttachNewDeviceResponse attachNewDeviceResponse =
+                    new UserServerObjectService().AttachNewDevice(new AttachNewDeviceRequest()
+                    {
+                        UserToken = request.UserToken
+                    });
+
+                if (attachNewDeviceResponse.Result.Success())
+                {
+                    response.Result = new Ac4yProcessResult() { Code = Ac4yProcessResult.SUCCESS, Message = "Sikeres insert" };
+                }
+                else
+                {
+                    response.Result = new Ac4yProcessResult() { Code = Ac4yProcessResult.INEFFECTIVE, Message = "Insert nem sikerült" };
+                }
+
+            }
+            catch (Exception exception)
+            {
+                response.Result = (new Ac4yProcessResult() { Code = Ac4yProcessResult.FAIL, Message = exception.Message, Description = exception.StackTrace });
+            }
+            return response;
+        }
+
+
+        public AcceptRequestResponse AcceptRequest(AcceptRequestRequest request)
+        {
+            AcceptRequestResponse response = new AcceptRequestResponse();
+
+            try
+            {
+                AttachNewDeviceObjectResponse attachNewDeviceResponse =
+                    new GigServerPersistentObjectService().AttachNewDevice(new AttachNewDeviceObjectRequest()
+                    {
+                        UserToken = request.UserToken
+                    });
+
+                if (attachNewDeviceResponse.Result.Success())
+                {
+                    response.Result = new Ac4yProcessResult() { Code = Ac4yProcessResult.SUCCESS, Message = "Sikeres insert" };
+                }
+                else
+                {
+                    response.Result = new Ac4yProcessResult() { Code = Ac4yProcessResult.INEFFECTIVE, Message = "Insert nem sikerült" };
+                }
+
+            }
+            catch (Exception exception)
+            {
+                response.Result = (new Ac4yProcessResult() { Code = Ac4yProcessResult.FAIL, Message = exception.Message, Description = exception.StackTrace });
+            }
+            return response;
+        }
     }
 
 }
