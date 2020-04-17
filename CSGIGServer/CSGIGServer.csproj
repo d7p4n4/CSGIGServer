@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="CSAc4yFW">
+      <HintPath>C:\library\LPCsharp\CSAc4yFW.dll</HintPath>
+    </Reference>
+    <Reference Include="CSAc4yServiceFW">
+      <HintPath>C:\library\LPCsharp\CSAc4yServiceFW.dll</HintPath>
+    </Reference>
+    <Reference Include="CSGIGUserServer">
+      <HintPath>C:\library\LPCsharp\CSGIGUserServer.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
