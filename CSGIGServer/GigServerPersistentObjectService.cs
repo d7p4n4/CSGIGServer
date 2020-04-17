@@ -224,7 +224,8 @@ namespace CSGIGServer
                 CheckSerialNumberResponse checkSerialNumberResponse =
                     new UserServerObjectService().CheckSerialNumber(new CheckSerialNumberRequest()
                     {
-                        SerialNumber = request.SerialNumber
+                        SerialNumber = request.SerialNumber,
+                        fbToken = request.fbToken
                     });
 
                 if (checkSerialNumberResponse.Result.Success())
@@ -233,7 +234,7 @@ namespace CSGIGServer
                 }
                 else
                 {
-                    response.Result = new Ac4yProcessResult() { Code = Ac4yProcessResult.INEFFECTIVE, Message = "nem létezik" };
+                    response.Result = new Ac4yProcessResult() { Code = Ac4yProcessResult.INEFFECTIVE, Message = "nem létezik az adott sorszám, vagy a token már hozzá van rendelve" };
                 }
 
             }
