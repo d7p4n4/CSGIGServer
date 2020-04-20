@@ -9,7 +9,7 @@ namespace CSGIGUserServer
     public class AuthenticationRequestClientRequest : Ac4yServiceRequest
     {
         public string fbToken { get; set; }
-        public int CheckData { get; set; }
+        public string CheckData { get; set; }
 
     }
 }

@@ -174,22 +174,9 @@ namespace CSGIGServer
                                 }
                             });
 
-                        if (authenticationRequestInsertResponse.Result.Success())
-                        {
-
-                            new AuthenticationServerClient()
-                            {
-                                Server = "https://fcm.googleapis.com/fcm/send",
-                                ServerKey = "AAAAMrfsOZQ:APA91bE_BRElbjcU7XZyAZn6Yw8C8bhOS1vd3gWGch9am14IepEIJleW_ZKGACIyGzz3gxuQpLwVUcZuZcsRWg7k0UbnJ3_SWL87tCT41I6ALga7lnANK-WlhV94mOn5b08mIVaVv1Dx"
-                            }.AuthenticatioRequest(new AuthenticationRequestClientRequest() { fbToken = request.fbToken, CheckData = checkData });
-
-                            response.RequestGuid = guid;
-                            response.Result = new Ac4yProcessResult() { Code = Ac4yProcessResult.SUCCESS, Message = "Sikeres request insert" };
-                        }
-                        else
-                        {
-                            response.Result = (new Ac4yProcessResult() { Code = Ac4yProcessResult.FAIL, Message = "Nem volt sikeres a request insert" });
-                        }
+                        response.AuthenticationRequest = authenticationRequestInsertResponse.AuthenticationRequest;
+                        response.fbToken = request.fbToken;
+                        response.Result = new Ac4yProcessResult() { Code = Ac4yProcessResult.SUCCESS, Message = "Sikeres request insert" };
                     }
                     catch (Exception exception)
                     {
@@ -198,6 +185,29 @@ namespace CSGIGServer
 
                 }
                 
+            }
+            catch (Exception exception)
+            {
+                response.Result = (new Ac4yProcessResult() { Code = Ac4yProcessResult.FAIL, Message = exception.Message, Description = exception.StackTrace });
+            }
+            return response;
+        }
+
+        public AuthenticationRequestObjectServiceResponse AuthenticationRequest(AuthenticationRequestObjectServiceRequest request)
+        {
+            AuthenticationRequestObjectServiceResponse response = new AuthenticationRequestObjectServiceResponse();
+
+            try
+            {
+                new AuthenticationServerClient()
+                {
+                    Server = "https://fcm.googleapis.com/fcm/send",
+                    ServerKey = "AAAAMrfsOZQ:APA91bE_BRElbjcU7XZyAZn6Yw8C8bhOS1vd3gWGch9am14IepEIJleW_ZKGACIyGzz3gxuQpLwVUcZuZcsRWg7k0UbnJ3_SWL87tCT41I6ALga7lnANK-WlhV94mOn5b08mIVaVv1Dx"
+                }.AuthenticatioRequest(new AuthenticationRequestClientRequest() { fbToken = request.fbToken, CheckData = request.AuthenticationRequest.CheckData });
+
+                response.Result = new Ac4yProcessResult() { Code = Ac4yProcessResult.SUCCESS, Message = "Sikeres authentication request" };
+            
+
             }
             catch (Exception exception)
             {
@@ -389,6 +399,22 @@ namespace CSGIGServer
             }
             return response;
 
+        }
+
+        public AcceptAuthenticationResponse AcceptAuthentication(AcceptAuthenticationRequest request)
+        {
+            AcceptAuthenticationResponse response = new AcceptAuthenticationResponse();
+
+            try
+            {
+                response.Result = new Ac4yProcessResult() { Code = Ac4yProcessResult.SUCCESS, Message = "A reguestGuid: " + request.RequestGuid +
+                    " és a checkData: " + request.CheckData + " megérkezett." };
+            }
+            catch (Exception exception)
+            {
+                response.Result = (new Ac4yProcessResult() { Code = Ac4yProcessResult.FAIL, Message = exception.Message, Description = exception.StackTrace });
+            }
+            return response;
         }
     }
 
