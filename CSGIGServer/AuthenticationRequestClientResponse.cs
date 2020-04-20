@@ -4,10 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace CSGIGServer
+namespace CSGIGUserServer
 {
-    public class LoginRequestResponse : Ac4yServiceResponse
+    public class AuthenticationRequestClientResponse : Ac4yServiceResponse
     {
-        public string RequestGuid { get; set; }
     }
 }

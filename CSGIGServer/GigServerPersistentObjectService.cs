@@ -161,14 +161,35 @@ namespace CSGIGServer
 
                     try
                     {
-                        new AuthenticationServerClient()
+                        string guid = new Generator().GuidGenerator();
+                        int checkData = new Generator().CheckDataGenerator();
+
+                        AuthenticationRequestInsertResponse authenticationRequestInsertResponse =
+                            new GigServerPersistentObjectService().AuthenticationRequestInsert(new AuthenticationRequestInsertRequest()
+                            {
+                                AuthenticationRequest = new AuthenticationRequest()
+                                {
+                                    Guid = guid,
+                                    CheckData = checkData.ToString()
+                                }
+                            });
+
+                        if (authenticationRequestInsertResponse.Result.Success())
                         {
-                            Server = "https://fcm.googleapis.com/fcm/send",
-                            ServerKey = "AAAAMrfsOZQ:APA91bE_BRElbjcU7XZyAZn6Yw8C8bhOS1vd3gWGch9am14IepEIJleW_ZKGACIyGzz3gxuQpLwVUcZuZcsRWg7k0UbnJ3_SWL87tCT41I6ALga7lnANK-WlhV94mOn5b08mIVaVv1Dx"
-                        }.AuthenticatioRequest(new AuthenticatioRequestRequest() { fbToken = request.fbToken });
 
-                        response.Result = new Ac4yProcessResult() { Code = Ac4yProcessResult.SUCCESS, Message = "Authentikáció sikeres" };
+                            new AuthenticationServerClient()
+                            {
+                                Server = "https://fcm.googleapis.com/fcm/send",
+                                ServerKey = "AAAAMrfsOZQ:APA91bE_BRElbjcU7XZyAZn6Yw8C8bhOS1vd3gWGch9am14IepEIJleW_ZKGACIyGzz3gxuQpLwVUcZuZcsRWg7k0UbnJ3_SWL87tCT41I6ALga7lnANK-WlhV94mOn5b08mIVaVv1Dx"
+                            }.AuthenticatioRequest(new AuthenticationRequestClientRequest() { fbToken = request.fbToken, CheckData = checkData });
 
+                            response.RequestGuid = guid;
+                            response.Result = new Ac4yProcessResult() { Code = Ac4yProcessResult.SUCCESS, Message = "Sikeres request insert" };
+                        }
+                        else
+                        {
+                            response.Result = (new Ac4yProcessResult() { Code = Ac4yProcessResult.FAIL, Message = "Nem volt sikeres a request insert" });
+                        }
                     }
                     catch (Exception exception)
                     {

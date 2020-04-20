@@ -8,6 +8,7 @@ namespace CSGIGServer
     public class LoginResponse
     {
         public string fbToken { get; set; }
+        public string RequestGuid { get; set; }
         
     }
 }
