@@ -308,6 +308,67 @@ namespace CSGIGServer
             }
             return response;
         }
+
+        public AuthenticationRequestInsertResponse AuthenticationRequestInsert(AuthenticationRequestInsertRequest request)
+        {
+            AuthenticationRequestInsertResponse response = new AuthenticationRequestInsertResponse();
+
+            try
+            {
+                AuthenticationRequestResponse authenticationRequestResponse =
+                    new UserServerObjectService().AuthenticationRequestInsert(new AuthenticationRequestRequest()
+                    {
+                        AuthenticationRequest = request.AuthenticationRequest
+                    });
+
+                if (authenticationRequestResponse.Result.Success())
+                {
+                    response.Result = new Ac4yProcessResult() { Code = Ac4yProcessResult.SUCCESS, Message = "Sikeres insert" };
+                    response.AuthenticationRequest = authenticationRequestResponse.AuthenticationRequest;
+                }
+                else
+                {
+                    response.Result = new Ac4yProcessResult() { Code = Ac4yProcessResult.INEFFECTIVE, Message = "Insert nem sikerült" };
+                }
+
+            }
+            catch (Exception exception)
+            {
+                response.Result = (new Ac4yProcessResult() { Code = Ac4yProcessResult.FAIL, Message = exception.Message, Description = exception.StackTrace });
+            }
+            return response;
+        }
+
+        public AuthenticationRequestGetByGuidResponse AuthenticationRequestGetByGuid(AuthenticationRequestGetByGuidRequest request)
+        {
+            AuthenticationRequestGetByGuidResponse response = new AuthenticationRequestGetByGuidResponse();
+
+            try
+            {
+                CSGIGUserServer.AuthenticationRequestGetByGuidResponse authenticationRequestGetByGuidResponse =
+                    new UserServerObjectService().AuthenticationRequestGetByGuid(new CSGIGUserServer.AuthenticationRequestGetByGuidRequest()
+                    {
+                        Guid = request.Guid
+                    });
+
+                if (authenticationRequestGetByGuidResponse.Result.Success())
+                {
+                    response.Result = new Ac4yProcessResult() { Code = Ac4yProcessResult.SUCCESS, Message = "Létezik adott guiddal request" };
+                    response.AuthenticationRequest = authenticationRequestGetByGuidResponse.AuthenticationRequest;
+                }
+                else
+                {
+                    response.Result = new Ac4yProcessResult() { Code = Ac4yProcessResult.INEFFECTIVE, Message = "nem létezik" };
+                }
+
+            }
+            catch (Exception exception)
+            {
+                response.Result = (new Ac4yProcessResult() { Code = Ac4yProcessResult.FAIL, Message = exception.Message, Description = exception.StackTrace });
+            }
+            return response;
+
+        }
     }
 
 }

@@ -15,14 +15,15 @@ namespace CSGIGServer
                     fbToken = "123456"
                 });
                 
-
+            
             CheckSerialNumberObjectResponse checkSerialNumberObjectResponse =
                 new GigServerPersistentObjectService().CheckSerialNumber(new CheckSerialNumberObjectRequest()
                 {
-                    SerialNumber = 17
+                    SerialNumber = 1,
+                    fbToken = "123456"
                 });
-                */
-
+                
+            
             AcceptRequestResponse attachNewDeviceObjectResponse =
                 new GigServerPersistentObjectService().AcceptRequest(new AcceptRequestRequest()
                 {
@@ -31,6 +32,22 @@ namespace CSGIGServer
                         fbToken = "123456789",
                         UserGuid = "guid2"
                     }
+                });*/
+
+            AuthenticationRequestInsertResponse authenticationRequestInsertResponse =
+                new GigServerPersistentObjectService().AuthenticationRequestInsert(new AuthenticationRequestInsertRequest()
+                {
+                    AuthenticationRequest = new AuthenticationRequest()
+                    {
+                        Guid = new Generator().GuidGenerator(),
+                        CheckData = new Generator().CheckDataGenerator().ToString()
+                    }
+                });
+
+            AuthenticationRequestGetByGuidResponse authenticationRequestGetByGuidResponse =
+                new GigServerPersistentObjectService().AuthenticationRequestGetByGuid(new AuthenticationRequestGetByGuidRequest()
+                {
+                    Guid = "��f2�6�OBy�?D�@>�$L����a��@�-Q}��a9�������m���1VdE8��q?!"
                 });
         }
     }
