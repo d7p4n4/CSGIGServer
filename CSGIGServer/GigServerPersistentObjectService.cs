@@ -1,4 +1,5 @@
-﻿using CSGIGUserServer;
+﻿using CSGIGAuthenticationServer;
+using CSGIGUserServer;
 using Modul.Final.Class;
 using System;
 using System.Collections.Generic;
@@ -137,10 +138,16 @@ namespace CSGIGServer
 
             try
             {
-                if (new GigServerService().IsUnknownOrInvalidToken(request.fbToken))
-                    response.Result = new Ac4yProcessResult() { Code = Ac4yProcessResult.SUCCESS, Message = "létezik" };
+                IsUnknownOrInvalidTokenResponse isUnknownOrInvalidTokenResponse =
+                    new UserServerObjectService().IsUnknownOrInvalidToken(new IsUnknownOrInvalidTokenRequest()
+                    {
+                        fbToken = request.fbToken
+                    });
+
+                if (isUnknownOrInvalidTokenResponse.Result.Success())
+                    response.Result = new Ac4yProcessResult() { Code = Ac4yProcessResult.SUCCESS, Message = "unknown or invalid token" };
                 else
-                    response.Result = new Ac4yProcessResult() { Code = Ac4yProcessResult.INEFFECTIVE, Message = "nem létezik" };
+                    response.Result = new Ac4yProcessResult() { Code = Ac4yProcessResult.INEFFECTIVE, Message = "létező token" };
             }
             catch (Exception exception)
             {
@@ -155,7 +162,13 @@ namespace CSGIGServer
 
             try
             {
-                if (new GigServerService().LoginRequest(request.fbToken))
+                IsUnknownOrInvalidTokenResponse isUnknownOrInvalidTokenResponse =
+                    new UserServerObjectService().IsUnknownOrInvalidToken(new IsUnknownOrInvalidTokenRequest()
+                        { 
+                            fbToken = request.fbToken
+                        });
+
+                if (isUnknownOrInvalidTokenResponse.Result.Success())
                 {
                     response.Result = new Ac4yProcessResult() { Code = Ac4yProcessResult.SUCCESS, Message = "Mehet a login, a token rendben" };
 
@@ -165,7 +178,7 @@ namespace CSGIGServer
                         int checkData = new Generator().CheckDataGenerator();
 
                         AuthenticationRequestInsertResponse authenticationRequestInsertResponse =
-                            new GigServerPersistentObjectService().AuthenticationRequestInsert(new AuthenticationRequestInsertRequest()
+                            new UserServerObjectService().AuthenticationRequestInsert(new AuthenticationRequestInsertRequest()
                             {
                                 AuthenticationRequest = new AuthenticationRequest()
                                 {
@@ -182,31 +195,11 @@ namespace CSGIGServer
                     {
                         response.Result = (new Ac4yProcessResult() { Code = Ac4yProcessResult.FAIL, Message = exception.Message, Description = exception.StackTrace });
                     }
-
                 }
-                
-            }
-            catch (Exception exception)
-            {
-                response.Result = (new Ac4yProcessResult() { Code = Ac4yProcessResult.FAIL, Message = exception.Message, Description = exception.StackTrace });
-            }
-            return response;
-        }
-
-        public AuthenticationRequestObjectServiceResponse AuthenticationRequest(AuthenticationRequestObjectServiceRequest request)
-        {
-            AuthenticationRequestObjectServiceResponse response = new AuthenticationRequestObjectServiceResponse();
-
-            try
-            {
-                new AuthenticationServerClient()
+                else
                 {
-                    Server = "https://fcm.googleapis.com/fcm/send",
-                    ServerKey = "AAAAMrfsOZQ:APA91bE_BRElbjcU7XZyAZn6Yw8C8bhOS1vd3gWGch9am14IepEIJleW_ZKGACIyGzz3gxuQpLwVUcZuZcsRWg7k0UbnJ3_SWL87tCT41I6ALga7lnANK-WlhV94mOn5b08mIVaVv1Dx"
-                }.AuthenticatioRequest(new AuthenticationRequestClientRequest() { fbToken = request.fbToken, CheckData = request.AuthenticationRequest.CheckData });
-
-                response.Result = new Ac4yProcessResult() { Code = Ac4yProcessResult.SUCCESS, Message = "Sikeres authentication request" };
-            
+                    response.Result = new Ac4yProcessResult() { Code = Ac4yProcessResult.INEFFECTIVE, Message = "Ismeretlen, lejárt, ..." };
+                }
 
             }
             catch (Exception exception)
@@ -340,36 +333,6 @@ namespace CSGIGServer
             return response;
         }
 
-        public AuthenticationRequestInsertResponse AuthenticationRequestInsert(AuthenticationRequestInsertRequest request)
-        {
-            AuthenticationRequestInsertResponse response = new AuthenticationRequestInsertResponse();
-
-            try
-            {
-                AuthenticationRequestResponse authenticationRequestResponse =
-                    new UserServerObjectService().AuthenticationRequestInsert(new AuthenticationRequestRequest()
-                    {
-                        AuthenticationRequest = request.AuthenticationRequest
-                    });
-
-                if (authenticationRequestResponse.Result.Success())
-                {
-                    response.Result = new Ac4yProcessResult() { Code = Ac4yProcessResult.SUCCESS, Message = "Sikeres insert" };
-                    response.AuthenticationRequest = authenticationRequestResponse.AuthenticationRequest;
-                }
-                else
-                {
-                    response.Result = new Ac4yProcessResult() { Code = Ac4yProcessResult.INEFFECTIVE, Message = "Insert nem sikerült" };
-                }
-
-            }
-            catch (Exception exception)
-            {
-                response.Result = (new Ac4yProcessResult() { Code = Ac4yProcessResult.FAIL, Message = exception.Message, Description = exception.StackTrace });
-            }
-            return response;
-        }
-
         public AuthenticationRequestGetByGuidResponse AuthenticationRequestGetByGuid(AuthenticationRequestGetByGuidRequest request)
         {
             AuthenticationRequestGetByGuidResponse response = new AuthenticationRequestGetByGuidResponse();
@@ -409,6 +372,56 @@ namespace CSGIGServer
             {
                 response.Result = new Ac4yProcessResult() { Code = Ac4yProcessResult.SUCCESS, Message = "A reguestGuid: " + request.RequestGuid +
                     " és a checkData: " + request.CheckData + " megérkezett." };
+            }
+            catch (Exception exception)
+            {
+                response.Result = (new Ac4yProcessResult() { Code = Ac4yProcessResult.FAIL, Message = exception.Message, Description = exception.StackTrace });
+            }
+            return response;
+        }
+
+        public SignUpRequestResponse SignUpRequest(SignUpRequestRequest request)
+        {
+            SignUpRequestResponse response = new SignUpRequestResponse();
+
+            try
+            {
+                IsExistTokenByTokenResponse isExistTokenByTokenResponse =
+                    new UserServerObjectService().IsExistTokenByToken(new IsExistTokenByTokenRequest()
+                    {
+                        fbToken = request.fbToken
+                    });
+
+                if (isExistTokenByTokenResponse.Result.Success())
+                    throw new Exception("Már létezik az adatbázisban ez a token");
+
+                string guid = new Generator().GuidGenerator();
+
+                InsertNewUserResponse insertNewUserResponse =
+                    new UserServerObjectService().InsertNewUser(new InsertNewUserRequest()
+                    {
+                        User = new User()
+                        {
+                            Guid = guid,
+                            FBToken = request.fbToken
+                        }
+                    });
+
+                if (insertNewUserResponse.Result.Success())
+                {
+                    InsertNewTokenResponse insertNewTokenResponse =
+                        new UserServerObjectService().InsertNewToken(new InsertNewTokenRequest()
+                        {
+                            UserToken = new UserToken()
+                            {
+                                fbToken = request.fbToken,
+                                UserGuid = guid
+                            }
+                        });
+
+                    if(insertNewTokenResponse.Result.Success())
+                        response.Result = new Ac4yProcessResult() { Code = Ac4yProcessResult.SUCCESS };
+                }
             }
             catch (Exception exception)
             {

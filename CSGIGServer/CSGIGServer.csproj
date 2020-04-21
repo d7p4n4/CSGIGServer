@@ -22,6 +22,9 @@
     <Reference Include="CSAc4yServiceFW">
       <HintPath>C:\library\LPCsharp\CSAc4yServiceFW.dll</HintPath>
     </Reference>
+    <Reference Include="CSGIGAuthenticationServer">
+      <HintPath>C:\library\LPCsharp\CSGIGAuthenticationServer.dll</HintPath>
+    </Reference>
     <Reference Include="CSGIGUserServer">
       <HintPath>C:\library\LPCsharp\CSGIGUserServer.dll</HintPath>
     </Reference>

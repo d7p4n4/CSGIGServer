@@ -7,18 +7,20 @@ using System.Threading.Tasks;
 
 namespace CSGIGServer
 {
-    public class FirebaseSignUpServerClient
+    public class SignUp
     {
-        public FirebaseSignUpResponse FirebaseSignUp(FirebaseSignUpRequest request)
+        public SignUpRequestResponse SignUpRequest(SignUpRequestRequest request)
         {
-            FirebaseSignUpResponse response = new FirebaseSignUpResponse();
+            SignUpRequestResponse response = new SignUpRequestResponse();
 
             try
             {
                 if (new EFUserMethodsCAP().IsExistByFBToken(request.fbToken))
                     throw new Exception("Már létezik az adatbázisban ez a token");
 
-                new EFUserMethodsCAP().Insert(new User() { FBToken = request.fbToken });
+                string guid = new Generator().GuidGenerator();
+
+                new EFUserMethodsCAP().Insert(new User() { FBToken = request.fbToken, Guid = guid });
 
                 response.Result = new Ac4yProcessResult() { Code = Ac4yProcessResult.SUCCESS };
             }

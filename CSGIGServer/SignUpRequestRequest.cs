@@ -4,12 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace CSGIGUserServer
+namespace CSGIGServer
 {
-    public class AuthenticationRequestClientRequest : Ac4yServiceRequest
+    public class SignUpRequestRequest : Ac4yServiceRequest
     {
         public string fbToken { get; set; }
-        public string CheckData { get; set; }
-
     }
 }
