@@ -8,7 +8,7 @@ namespace CSGIGServer
     class Program
     {
         public static void Main(String[] args)
-        {/*
+        {
             GetUserFromByTokenResponse getUserFromByTokenResponse =
                 new GigServerPersistentObjectService().GetUserFromByToken(new GetUserFromByTokenReqest()
                 {
@@ -33,7 +33,7 @@ namespace CSGIGServer
                         UserGuid = "guid2"
                     }
                 });
-
+                /*
             AuthenticationRequestInsertResponse authenticationRequestInsertResponse =
                 new GigServerPersistentObjectService().AuthenticationRequestInsert(new AuthenticationRequestInsertRequest()
                 {
@@ -48,10 +48,16 @@ namespace CSGIGServer
                 new GigServerPersistentObjectService().AuthenticationRequestGetByGuid(new AuthenticationRequestGetByGuidRequest()
                 {
                     Guid = "��f2�6�OBy�?D�@>�$L����a��@�-Q}��a9�������m���1VdE8��q?!"
-                });*/
+                });
 
             LoginRequestResponse loginRequestResponse =
                 new GigServerPersistentObjectService().LoginRequest(new LoginRequestRequest()
+                {
+                    fbToken = "c6QuWuYRrEDsn58FUUp_7D:APA91bEDmyi_yR7tIBEqrfg2hRHAOf1j2Nre0QAdT4Btx3bJrxropZYTmD6YooKh5O59WQZF_9EHAM04if5BJuZwk_16-FYmj7rs31zIuoI_ZIrzXA3TwPmpcxZRVNZ4dnVDaqn3Z7ZD"
+                });*/
+
+            SignUpRequestResponse signUpRequestResponse =
+                new GigServerPersistentObjectService().SignUpRequest(new SignUpRequestRequest()
                 {
                     fbToken = "c6QuWuYRrEDsn58FUUp_7D:APA91bEDmyi_yR7tIBEqrfg2hRHAOf1j2Nre0QAdT4Btx3bJrxropZYTmD6YooKh5O59WQZF_9EHAM04if5BJuZwk_16-FYmj7rs31zIuoI_ZIrzXA3TwPmpcxZRVNZ4dnVDaqn3Z7ZD"
                 });

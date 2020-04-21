@@ -32,8 +32,15 @@ namespace CSGIGServer
         {
             IsExistByFBTokenResponse response = new IsExistByFBTokenResponse();
 
-            try { 
-                if (new EFUserMethodsCAP().IsExistByFBToken(request.fbToken))
+            try
+            {
+                IsExistTokenByTokenResponse isExistTokenByTokenResponse =
+                    new UserServerObjectService().IsExistTokenByToken(new IsExistTokenByTokenRequest()
+                    {
+                        fbToken = request.fbToken
+                    });
+
+                if (isExistTokenByTokenResponse.Result.Success())
                     response.Result = new Ac4yProcessResult() { Code = Ac4yProcessResult.SUCCESS, Message = "létezik" };
                 else
                     response.Result = new Ac4yProcessResult() { Code = Ac4yProcessResult.INEFFECTIVE, Message = "nem létezik" };
@@ -45,22 +52,6 @@ namespace CSGIGServer
             return response;
         }
 
-        public GetByFBTokenResponse GetByFBToken(GetByFBTokenRequest request)
-        {
-            GetByFBTokenResponse response = new GetByFBTokenResponse();
-
-            try
-            {
-                response.User = new EFUserMethodsCAP().GetByFBToken(request.fbToken);
-
-                response.Result = new Ac4yProcessResult() { Code = Ac4yProcessResult.SUCCESS };
-            }
-            catch (Exception exception)
-            {
-                response.Result = (new Ac4yProcessResult() { Code = Ac4yProcessResult.FAIL, Message = exception.Message, Description = exception.StackTrace });
-            }
-            return response;
-        }
 
         public isExistByIdResponse isExistById(isExistByIdRequest request)
         {
@@ -403,7 +394,6 @@ namespace CSGIGServer
                         User = new User()
                         {
                             Guid = guid,
-                            FBToken = request.fbToken
                         }
                     });
 
@@ -420,7 +410,7 @@ namespace CSGIGServer
                         });
 
                     if(insertNewTokenResponse.Result.Success())
-                        response.Result = new Ac4yProcessResult() { Code = Ac4yProcessResult.SUCCESS };
+                        response.Result = new Ac4yProcessResult() { Code = Ac4yProcessResult.SUCCESS, Message = "Mindkét insert, így a sign up is sikeres" };
                 }
             }
             catch (Exception exception)
