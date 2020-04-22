@@ -163,21 +163,28 @@ namespace CSGIGServer
                 {
                     response.Result = new Ac4yProcessResult() { Code = Ac4yProcessResult.SUCCESS, Message = "Mehet a login, a token rendben" };
 
-                    try
+                    int checkData = new Generator().CheckDataGenerator();
+
+                    User user = null;
+
+                    GetUserByTokenResponse getUserByTokenResponse =
+                        new UserServerObjectService().GetUserByToken(new GetUserByTokenRequest()
+                        {
+                            fbToken = request.fbToken
+                        });
+
+                    if (getUserByTokenResponse.Result.Success())
                     {
-                        int checkData = new Generator().CheckDataGenerator();
+                        user = getUserByTokenResponse.User;
 
-                        User user = null;
-
-                        GetUserByTokenResponse getUserByTokenResponse =
-                            new UserServerObjectService().GetUserByToken(new GetUserByTokenRequest()
+                        isExistByGuidResponse isExistByGuidResponse =
+                            new UserServerObjectService().IsExistByGuid(new isExistByGuidRequest()
                             {
-                                fbToken = request.fbToken
+                                Guid = user.Guid
                             });
 
-                        if (getUserByTokenResponse.Result.Success())
+                        if (!isExistByGuidResponse.Result.Success())
                         {
-                            user = getUserByTokenResponse.User;
 
                             AuthenticationRequestInsertResponse authenticationRequestInsertResponse =
                                 new UserServerObjectService().AuthenticationRequestInsert(new AuthenticationRequestInsertRequest()
@@ -195,13 +202,14 @@ namespace CSGIGServer
                         }
                         else
                         {
-                            response.Result = new Ac4yProcessResult() { Code = Ac4yProcessResult.INEFFECTIVE, Message = "Technikai hiba történt, próbálja meg később" };
+                            response.Result = new Ac4yProcessResult() { Code = Ac4yProcessResult.INEFFECTIVE, Message = "Ezzel a guiddal már létezik rekord a db-ben" };
                         }
                     }
-                    catch (Exception exception)
+                    else
                     {
-                        response.Result = (new Ac4yProcessResult() { Code = Ac4yProcessResult.FAIL, Message = exception.Message, Description = exception.StackTrace });
+                        response.Result = new Ac4yProcessResult() { Code = Ac4yProcessResult.INEFFECTIVE, Message = "Technikai hiba történt, próbálja meg később" };
                     }
+                    
                 }
                 else
                 {
