@@ -239,6 +239,7 @@ namespace CSGIGServer
 
                 if (checkSerialNumberResponse.Result.Success())
                 {
+                    response.UserGuid = checkSerialNumberResponse.UserGuid;
                     response.Result = new Ac4yProcessResult() { Code = Ac4yProcessResult.SUCCESS, Message = "létezik" };
                 }
                 else
@@ -295,8 +296,8 @@ namespace CSGIGServer
 
             try
             {
-                AttachNewDeviceObjectResponse attachNewDeviceResponse =
-                    new GigServerPersistentObjectService().AttachNewDevice(new AttachNewDeviceObjectRequest()
+                AttachNewDeviceResponse attachNewDeviceResponse =
+                    new UserServerObjectService().AttachNewDevice(new AttachNewDeviceRequest()
                     {
                         UserToken = request.UserToken
                     });
