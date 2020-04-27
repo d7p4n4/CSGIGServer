@@ -275,6 +275,15 @@ namespace CSGIGServer
                 if (attachNewDeviceResponse.Result.Success())
                 {
                     response.Result = new Ac4yProcessResult() { Code = Ac4yProcessResult.SUCCESS, Message = "Sikeres insert" };
+
+                    DeleteUserResponse deleteUserResponse =
+                        new UserServerObjectService().DeleteUser(new DeleteUserRequest()
+                        {
+                            fbToken = request.UserToken.fbToken
+                        });
+
+                    if(deleteUserResponse.Result.Success())
+                        response.Result = new Ac4yProcessResult() { Code = Ac4yProcessResult.SUCCESS, Message = "Sikeres insert és delete" };
                 }
                 else
                 {
@@ -379,7 +388,11 @@ namespace CSGIGServer
                     });
 
                 if (isExistTokenByTokenResponse.Result.Success())
+                {
                     throw new Exception("Már létezik az adatbázisban ez a token");
+
+                    //response.Result = new Ac4yProcessResult() { Code = Ac4yProcessResult.FAIL, Message = "A token már létezik a db-ben" };
+                }
 
                 string guid = new Generator().GuidGenerator();
 
@@ -389,6 +402,11 @@ namespace CSGIGServer
                         User = new User()
                         {
                             Guid = guid,
+                            Name = request.Name,
+                            UserName = request.UserName,
+                            PhoneNumber = request.PhoneNumber,
+                            Email = request.Email,
+                            Password = request.Password
                         }
                     });
 
@@ -407,6 +425,35 @@ namespace CSGIGServer
                     if(insertNewTokenResponse.Result.Success())
                         response.Result = new Ac4yProcessResult() { Code = Ac4yProcessResult.SUCCESS, Message = "Mindkét insert, így a sign up is sikeres" };
                 }
+            }
+            catch (Exception exception)
+            {
+                response.Result = (new Ac4yProcessResult() { Code = Ac4yProcessResult.FAIL, Message = exception.Message, Description = exception.StackTrace });
+            }
+            return response;
+        }
+
+        public IsTokenExistResponse IsTokenExist(IsTokenExistRequest request)
+        {
+            IsTokenExistResponse response = new IsTokenExistResponse();
+
+            try
+            {
+                IsExistTokenByTokenResponse isExistTokenByTokenResponse =
+                    new UserServerObjectService().IsExistTokenByToken(new IsExistTokenByTokenRequest()
+                    {
+                        fbToken = request.fbToken
+                    });
+
+                if (isExistTokenByTokenResponse.Result.Success())
+                {
+                    response.Result = new Ac4yProcessResult() { Code = Ac4yProcessResult.SUCCESS, Message = "létezik a token" };
+                }
+                else
+                {
+                    response.Result = new Ac4yProcessResult() { Code = Ac4yProcessResult.INEFFECTIVE, Message = "nem létezik a token" };
+                }
+
             }
             catch (Exception exception)
             {
