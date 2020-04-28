@@ -202,7 +202,16 @@ namespace CSGIGServer
                         }
                         else
                         {
-                            response.Result = new Ac4yProcessResult() { Code = Ac4yProcessResult.INEFFECTIVE, Message = "Ezzel a guiddal már létezik rekord a db-ben" };
+                            AuthenticationRequestUpdateResponse authenticationRequestUpdateResponse =
+                                new UserServerObjectService().UpdateAuthenticationRequest(new AuthenticationRequestUpdateRequest()
+                                {
+                                    UserGuid = user.Guid,
+                                    CheckData = checkData.ToString()
+                                });
+
+                            response.AuthenticationRequest = authenticationRequestUpdateResponse.AuthenticationRequest;
+                            response.fbToken = request.fbToken;
+                            response.Result = new Ac4yProcessResult() { Code = Ac4yProcessResult.SUCCESS, Message = "Ezzel a guiddal már létezik rekord a db-ben" };
                         }
                     }
                     else
@@ -266,23 +275,29 @@ namespace CSGIGServer
 
             try
             {
-                AttachNewDeviceResponse attachNewDeviceResponse =
-                    new UserServerObjectService().AttachNewDevice(new AttachNewDeviceRequest()
+                DeleteUserResponse deleteUserResponse =
+                    new UserServerObjectService().DeleteUser(new DeleteUserRequest()
                     {
-                        UserToken = request.UserToken
+                        fbToken = request.UserToken.fbToken
                     });
 
-                if (attachNewDeviceResponse.Result.Success())
-                {
-                    response.Result = new Ac4yProcessResult() { Code = Ac4yProcessResult.SUCCESS, Message = "Sikeres insert" };
+                DeleteAuthenticationRequestResponse deleteAuthenticationRequestResponse =
+                    new UserServerObjectService().DeleteAuthenticationRequest(new DeleteAuthenticationRequestRequest()
+                    {
+                        UserGuid = deleteUserResponse.UserGuid
+                    });
 
-                    DeleteUserResponse deleteUserResponse =
-                        new UserServerObjectService().DeleteUser(new DeleteUserRequest()
+                if (deleteUserResponse.Result.Success())
+                {
+                    response.Result = new Ac4yProcessResult() { Code = Ac4yProcessResult.SUCCESS, Message = "Sikeres törlés" };
+
+                    AttachNewDeviceResponse attachNewDeviceResponse =
+                        new UserServerObjectService().AttachNewDevice(new AttachNewDeviceRequest()
                         {
-                            fbToken = request.UserToken.fbToken
+                            UserToken = request.UserToken
                         });
 
-                    if(deleteUserResponse.Result.Success())
+                    if (attachNewDeviceResponse.Result.Success())
                         response.Result = new Ac4yProcessResult() { Code = Ac4yProcessResult.SUCCESS, Message = "Sikeres insert és delete" };
                 }
                 else
@@ -305,10 +320,14 @@ namespace CSGIGServer
 
             try
             {
-                AttachNewDeviceResponse attachNewDeviceResponse =
-                    new UserServerObjectService().AttachNewDevice(new AttachNewDeviceRequest()
+                AttachNewDeviceObjectResponse attachNewDeviceResponse =
+                    new GigServerPersistentObjectService().AttachNewDevice(new AttachNewDeviceObjectRequest()
                     {
-                        UserToken = request.UserToken
+                        UserToken = new UserToken()
+                        {
+                            UserGuid = request.UserGuid,
+                            fbToken = request.fbToken
+                        }
                     });
 
                 if (attachNewDeviceResponse.Result.Success())
@@ -365,8 +384,17 @@ namespace CSGIGServer
 
             try
             {
-                response.Result = new Ac4yProcessResult() { Code = Ac4yProcessResult.SUCCESS, Message = "A reguestGuid: " + request.RequestGuid +
-                    " és a checkData: " + request.CheckData + " megérkezett." };
+                DeleteAuthenticationRequestResponse deleteAuthenticationRequestResponse =
+                    new UserServerObjectService().DeleteAuthenticationRequest(new DeleteAuthenticationRequestRequest()
+                    {
+                        UserGuid = request.RequestGuid
+                    });
+
+                if(deleteAuthenticationRequestResponse.Result.Success())
+                    response.Result = new Ac4yProcessResult() { Code = Ac4yProcessResult.SUCCESS, Message = "A requestGuid: " + request.RequestGuid +
+                        " és a checkData: " + request.CheckData + " megérkezett." };
+
+
             }
             catch (Exception exception)
             {

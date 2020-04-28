@@ -8,6 +8,7 @@ namespace CSGIGServer
 {
     public class AcceptRequestRequest : Ac4yServiceRequest
     {
-        public UserToken UserToken { get; set; }
+        public string fbToken { get; set; }
+        public string UserGuid { get; set; }
     }
 }
