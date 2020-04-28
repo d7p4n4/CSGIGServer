@@ -384,15 +384,8 @@ namespace CSGIGServer
 
             try
             {
-                DeleteAuthenticationRequestResponse deleteAuthenticationRequestResponse =
-                    new UserServerObjectService().DeleteAuthenticationRequest(new DeleteAuthenticationRequestRequest()
-                    {
-                        UserGuid = request.RequestGuid
-                    });
-
-                if(deleteAuthenticationRequestResponse.Result.Success())
-                    response.Result = new Ac4yProcessResult() { Code = Ac4yProcessResult.SUCCESS, Message = "A requestGuid: " + request.RequestGuid +
-                        " és a checkData: " + request.CheckData + " megérkezett." };
+                response.Result = new Ac4yProcessResult() { Code = Ac4yProcessResult.SUCCESS, Message = "A requestGuid: " + request.RequestGuid +
+                    " és a checkData: " + request.CheckData + " megérkezett." };
 
 
             }
