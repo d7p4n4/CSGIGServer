@@ -416,19 +416,12 @@ namespace CSGIGServer
                 }
 
                 string guid = new Generator().GuidGenerator();
+                request.User.Guid = guid;
 
                 InsertNewUserResponse insertNewUserResponse =
                     new UserServerObjectService().InsertNewUser(new InsertNewUserRequest()
                     {
-                        User = new User()
-                        {
-                            Guid = guid,
-                            Name = request.Name,
-                            UserName = request.UserName,
-                            PhoneNumber = request.PhoneNumber,
-                            Email = request.Email,
-                            Password = request.Password
-                        }
+                        User = request.User
                     });
 
                 if (insertNewUserResponse.Result.Success())
@@ -473,6 +466,37 @@ namespace CSGIGServer
                 else
                 {
                     response.Result = new Ac4yProcessResult() { Code = Ac4yProcessResult.INEFFECTIVE, Message = "nem létezik a token" };
+                }
+
+            }
+            catch (Exception exception)
+            {
+                response.Result = (new Ac4yProcessResult() { Code = Ac4yProcessResult.FAIL, Message = exception.Message, Description = exception.StackTrace });
+            }
+            return response;
+        }
+        
+        public GetUserFromByTokenResponse GetUserFromByToken(GetUserFromByTokenReqest request)
+        {
+            GetUserFromByTokenResponse response = new GetUserFromByTokenResponse();
+
+            try
+            {
+                GetUserByTokenResponse getUserByTokenResponse =
+                    new UserServerObjectService().GetUserByToken(new GetUserByTokenRequest()
+                    {
+                        fbToken = request.fbToken
+                    });
+
+                if (getUserByTokenResponse.Result.Success())
+                {
+                    response.User = getUserByTokenResponse.User;
+                    response.Json = getUserByTokenResponse.Json;
+                    response.Result = new Ac4yProcessResult() { Code = Ac4yProcessResult.SUCCESS, Message = "sikerült kiolvasni a tokenhez tartozó user" };
+                }
+                else
+                {
+                    response.Result = new Ac4yProcessResult() { Code = Ac4yProcessResult.INEFFECTIVE, Message = "Technikai hiba, nem sikerült kiolvasni a usert" };
                 }
 
             }

@@ -1,4 +1,5 @@
-﻿using Modul.Final.Class;
+﻿using CSGIGUserServer;
+using Modul.Final.Class;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +9,7 @@ namespace CSGIGServer
 {
     public class GetUserFromByTokenResponse : Ac4yServiceResponse
     {
-        public string UserGuid { get; set; }
+        public User User { get; set; }
+        public string Json { get; set; }
     }
 }
