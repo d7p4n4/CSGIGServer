@@ -8,6 +8,6 @@ namespace CSGIGServer
 {
     public class SignUpRequestResponse : Ac4yServiceResponse
     {
-        public string Guid { get; set; }
+        //public string Guid { get; set; }
     }
 }
